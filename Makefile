@@ -10,6 +10,8 @@ SOCKET_PATH=/var/run/keyd.socket
 CFLAGS:=-DVERSION=\"v$(VERSION)\ \($(COMMIT)\)\" \
 	-I/usr/local/include \
 	-L/usr/local/lib \
+	-I./include \
+	-I./build \
 	-Wall \
 	-Wextra \
 	-Wno-unused \
@@ -34,7 +36,7 @@ endif
 all:
 	-mkdir bin
 	cp scripts/keyd-application-mapper bin/
-	$(CC) $(CFLAGS) -O3 $(COMPAT_FILES) src/*.c src/vkbd/$(VKBD).c -lpthread -o bin/keyd $(LDFLAGS)
+	$(CC) $(CFLAGS) -O3 $(COMPAT_FILES) keyd/*.c keyd/vkbd/$(VKBD).c -lpthread -o bin/keyd $(LDFLAGS)
 debug:
 	CFLAGS="-g -fsanitize=address -Wunused" $(MAKE)
 compose:

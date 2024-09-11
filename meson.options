@@ -1,0 +1,2 @@
+option('socket_path', type : 'string', value : '/var/run/keyd.socket')
+option('vkbd', type : 'string', value : 'uinput', description : 'which vitual keyboard to use')

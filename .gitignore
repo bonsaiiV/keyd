@@ -4,6 +4,8 @@
 *.out
 tags
 bin/
+build/
+.cache/
 *.o
 *.gch
 __pycache__

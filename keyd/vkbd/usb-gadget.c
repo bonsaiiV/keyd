@@ -10,7 +10,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "../keys.h"
+#include "keys.h"
 #include "usb-gadget.h"
 
 static uint8_t mods = 0;

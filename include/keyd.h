@@ -5,6 +5,7 @@
  */
 #ifndef KEYD_H_
 #define KEYD_H_
+#include "projconf.h"
 
 #ifdef __FreeBSD__
 	#include <dev/evdev/input.h>

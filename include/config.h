@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "macro.h"
+#include "projconf.h"
 
 #define MAX_LAYER_NAME_LEN	64
 #define MAX_DESCRIPTOR_ARGS	3

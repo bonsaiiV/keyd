@@ -21,8 +21,9 @@
 #include "ini.h"
 #include "keys.h"
 #include "log.h"
-#include "string.h"
-#include "unicode.h"
+#include "strutil.h"
+#include "projconf.h"
+#include "config.h"
 
 #define MAX_FILE_SZ 65536
 #define MAX_LINE_LEN 256

@@ -3,7 +3,6 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
-/* Build with make vkbd-stdout. */
 
 #include <stdio.h>
 #include <string.h>
@@ -12,8 +11,8 @@
 #include <unistd.h>
 #include <linux/uinput.h>
 
-#include "../vkbd.h"
-#include "../keys.h"
+#include "vkbd.h"
+#include "keys.h"
 
 struct vkbd {};
 

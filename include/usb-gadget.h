@@ -8,7 +8,7 @@
 #define _USBGADGET_H_
 #define _USBGADGET_H_
 
-#include "../keys.h"
+#include "keys.h"
 
 #define HID_CTRL 0x1
 #define HID_RIGHTCTRL 0x10

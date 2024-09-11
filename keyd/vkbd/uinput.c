@@ -4,6 +4,7 @@
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
 
+#include "projconf.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -24,7 +25,7 @@
 #define REPEAT_INTERVAL 40
 #define REPEAT_TIMEOUT 200
 
-#include "../keyd.h"
+#include "keyd.h"
 
 struct vkbd {
 	int fd;

@@ -65,8 +65,7 @@ int is_timeval(const char *s)
  */
 size_t str_escape(char *s)
 {
-	int i = 0;
-	int n = 0;
+	size_t n = 0, i = 0;
 
 	for (i = 0; s[i]; i++) {
 		if (s[i] == '\\') {

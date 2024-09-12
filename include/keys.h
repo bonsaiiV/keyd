@@ -8,7 +8,6 @@
 #define _KEYS_H_
 
 #include <stdint.h>
-#include <stdlib.h>
 
 #define MOD_ALT_GR	0x10
 #define MOD_CTRL	0x8

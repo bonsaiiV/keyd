@@ -5,11 +5,7 @@
  */
 #ifndef KEYD_LOG_H
 #define KEYD_LOG_H
-
 #include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 
 #define keyd_log(fmt, ...) _keyd_log(0, fmt, ##__VA_ARGS__);
 

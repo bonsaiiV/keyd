@@ -3,16 +3,14 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
+#define _GNU_SOURCE
 
-#include "projconf.h"
 #include <stdio.h>
-#include <string.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <time.h>
-#include <errno.h>
+#include <stdlib.h>
 
 #ifdef __FreeBSD__
 	#include <dev/evdev/uinput.h>
@@ -26,6 +24,8 @@
 #define REPEAT_TIMEOUT 200
 
 #include "keyd.h"
+#include "keys.h"
+#include "log.h"
 
 struct vkbd {
 	int fd;
@@ -228,9 +228,7 @@ static void write_key_event(const struct vkbd *vkbd, uint8_t code, int state)
 
 struct vkbd *vkbd_init(const char *name)
 {
-	pthread_t tid;
-
-	struct vkbd *vkbd = calloc(1, sizeof vkbd);
+	struct vkbd *vkbd = calloc(1, sizeof(struct vkbd));
 	vkbd->fd = create_virtual_keyboard(name);
 	vkbd->pfd = create_virtual_pointer("keyd virtual pointer");
 

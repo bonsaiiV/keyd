@@ -5,15 +5,9 @@
  */
 
 #include <assert.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <libgen.h>
 
@@ -29,7 +23,7 @@
 #define MAX_LINE_LEN 256
 
 #undef warn
-#define warn(fmt, ...) keyd_log("\ty{WARNING:} "fmt"\n", ##__VA_ARGS__)
+#define warn(fmt, ...) keyd_log("\ty{WARNING:} "fmt"\n", __VA_ARGS__)
 
 static struct {
 	const char *name;
@@ -47,7 +41,7 @@ static struct {
 	} args[MAX_DESCRIPTOR_ARGS];
 } actions[] =  {
 	{ "swap", 	NULL,	OP_SWAP,	{ ARG_LAYER } },
-	{ "clear", 	NULL,	OP_CLEAR,	{} },
+	{ "clear", 	NULL,	OP_CLEAR,	{ 0 } },
 	{ "oneshot", 	NULL,	OP_ONESHOT,	{ ARG_LAYER } },
 	{ "toggle", 	NULL,	OP_TOGGLE,	{ ARG_LAYER } },
 
@@ -555,7 +549,6 @@ static int parse_descriptor(char *s,
 	}
 
 	if (!parse_key_sequence(s, &code, &mods)) {
-		size_t i;
 		const char *layer = NULL;
 
 		switch (code) {
@@ -767,7 +760,6 @@ static void parse_id_section(struct config *config, struct ini_section *section)
 {
 	size_t i;
 	for (i = 0; i < section->nr_entries; i++) {
-		uint16_t product, vendor;
 
 		struct ini_entry *ent = &section->entries[i];
 		const char *s = ent->key;
@@ -897,8 +889,6 @@ static int config_parse_string(struct config *config, char *content)
 
 static void config_init(struct config *config)
 {
-	size_t i;
-
 	memset(config, 0, sizeof *config);
 
 	char default_config[] =

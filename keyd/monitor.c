@@ -1,4 +1,15 @@
+#define _GNU_SOURCE
+#include <stdlib.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <termios.h>
+#include <unistd.h>
+#include <string.h>
+
+
 #include "keyd.h"
+#include "keys.h"
+#include "log.h"
 
 static int time_flag = 0;
 
@@ -19,7 +30,7 @@ static void set_tflags(tcflag_t flags, int val)
 	tcsetattr(0, TCSANOW, &tinfo);
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	/* Drain STDIN (useful for scripting). */
 	set_tflags(ICANON, 0);

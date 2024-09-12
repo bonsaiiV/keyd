@@ -4,7 +4,15 @@
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
 
+#include <assert.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/file.h>
+#include <sys/wait.h>
+
 #include "keyd.h"
+#include "keyboard.h"
+#include "log.h"
 
 static long process_event(struct keyboard *kbd, uint8_t code, int pressed, long time);
 
@@ -12,7 +20,7 @@ static long process_event(struct keyboard *kbd, uint8_t code, int pressed, long 
  * Here be tiny dragons.
  */
 
-static long get_time()
+static long get_time(void)
 {
 	/* Close enough :/. Using a syscall is unnecessary. */
 	static long time = 1;
@@ -215,6 +223,7 @@ static void lookup_descriptor(struct keyboard *kbd, uint8_t code,
 			size_t j;
 			int match = 1;
 			uint8_t mods = 0;
+			(void)mods;
 
 			for (j = 0; j < layer->nr_constituents; j++) {
 				if (kbd->layer_state[layer->constituents[j]].active)
@@ -1121,8 +1130,6 @@ int handle_pending_key(struct keyboard *kbd, uint8_t code, int pressed, long tim
  */
 static long process_event(struct keyboard *kbd, uint8_t code, int pressed, long time)
 {
-	int dl = -1;
-	struct descriptor d;
 
 	if (handle_chord(kbd, code, pressed, time))
 		goto exit;

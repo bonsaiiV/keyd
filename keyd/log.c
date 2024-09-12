@@ -3,8 +3,11 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
-#include "log.h"
-#include <time.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+
 
 char errstr[2048];
 

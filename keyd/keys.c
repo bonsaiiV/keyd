@@ -3,8 +3,8 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
-#include <stdint.h>
 #include <string.h>
+
 #include "keys.h"
 
 const struct modifier modifiers[MAX_MOD] = {

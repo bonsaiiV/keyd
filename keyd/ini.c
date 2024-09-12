@@ -5,13 +5,6 @@
  */
 #include <ctype.h>
 #include <string.h>
-#include <assert.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <assert.h>
 
 #include "log.h"
 #include "ini.h"

@@ -3,22 +3,23 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
+#define _GNU_SOURCE
 
-#include "keyd.h"
-
-#include <stdio.h>
 #include <pthread.h>
-#include <string.h>
-#include <sys/types.h>
 #include <dirent.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <sys/file.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <sys/inotify.h>
+#include <sys/un.h>
+
+#include "keyd.h"
+#include "log.h"
+#include "keys.h"
+
 
 /*
  * Abstract away evdev and inotify.
@@ -251,7 +252,7 @@ int device_scan(struct device devices[MAX_DEVICES])
  * would involve bookkeeping state for each fd, but this is
  * unnecessary for our use.
  */
-int devmon_create()
+int devmon_create(void)
 {
 	static int init = 0;
 	assert(!init);

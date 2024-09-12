@@ -6,11 +6,8 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include "keyd.h"
 #include "keys.h"
-#include "unicode.h"
 #include "config.h"
-#include "device.h"
 
 #define MAX_ACTIVE_KEYS	32
 #define CACHE_SIZE	16 //Effectively nkro

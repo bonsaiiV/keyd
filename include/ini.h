@@ -6,7 +6,7 @@
 #ifndef INI_H
 #define INI_H
 
-#include <stdint.h>
+#include <stdlib.h>
 
 #define MAX_SECTIONS 32
 #define MAX_SECTION_ENTRIES 1024

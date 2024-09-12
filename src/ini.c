@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <assert.h>
 
+#include "log.h"
 #include "ini.h"
 #define MAX_INI_SIZE 65536
 
@@ -66,9 +67,8 @@ void parse_kvp(char *s, char **key, char **value)
  * returned ini struct is no longer required.
  */
 
-struct ini *ini_parse_string(char *s, const char *default_section_name)
+int ini_parse_string(struct ini *ini, char *s, const char *default_section_name)
 {
-	static struct ini ini;
 
 	int ln = 0;
 	size_t n = 0;
@@ -107,9 +107,12 @@ struct ini *ini_parse_string(char *s, const char *default_section_name)
 		switch (line[0]) {
 		case '[':
 			if (line[len-1] == ']') {
-				assert(n < MAX_SECTIONS);
+				if (n >= MAX_SECTIONS){
+					snprintf(errstr, sizeof errstr, "too many sections");
+					return -1;
+				}
 
-				section = &ini.sections[n++];
+				section = &ini->sections[n++];
 
 				line[len-1] = 0;
 
@@ -127,22 +130,25 @@ struct ini *ini_parse_string(char *s, const char *default_section_name)
 
 		if (!section) {
 			if(default_section_name) {
-				section = &ini.sections[n++];
+				section = &ini->sections[n++];
 				strcpy(section->name, default_section_name);
 
 				section->nr_entries = 0;
 				section->lnum = 0;
 			} else
-				return NULL;
+				return -1;
 		}
 
-		assert(section->nr_entries < MAX_SECTION_ENTRIES);
+		if (section->nr_entries >= MAX_SECTION_ENTRIES) {
+			snprintf(errstr, sizeof errstr, "section [%s] has too many entries", section->name);
+			return -1;
+		}
 
 		ent = &section->entries[section->nr_entries++];
 		parse_kvp(line, &ent->key, &ent->val);
 		ent->lnum = ln;
 	}
 
-	ini.nr_sections = n;
-	return &ini;
+	ini->nr_sections = n;
+	return 0;
 }

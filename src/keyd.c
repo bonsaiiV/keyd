@@ -156,9 +156,8 @@ static int check_config(int argc, char *argv[])
 	if (inode.st_mode & S_IFREG)
 	{
 		if(config_parse(&dummy, config_path)){
-			snprintf(err_message, sizeof err_message, "failed to parse config at \"%s\"\n", config_path);
-			perror(err_message);
-			return 1;
+			fprintf(stderr, "failed to parse config at \"%s\": %s\n", config_path, errstr);
+			return -1;
 		}
 		printf("config at \"%s\" successfully parsed\n", config_path);
 		return 0;
@@ -169,7 +168,7 @@ static int check_config(int argc, char *argv[])
 		if (!(dh = opendir(CONFIG_DIR))) {
 			snprintf(err_message, sizeof err_message, "failed to open directory \"%s\"", config_path);
 			perror(err_message);
-			exit(-1);
+			return -1;
 		}
 
 

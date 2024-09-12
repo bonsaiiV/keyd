@@ -23,8 +23,10 @@ static void panic_check(uint8_t code, uint8_t pressed)
 		break;
 	}
 
-	if (backspace && enter && escape)
-		die("panic sequence detected");
+	if (backspace && enter && escape){
+		fprintf(stderr, "panic sequence detected");
+		exit(0);
+	}
 }
 
 static long get_time_ms()

@@ -836,14 +836,16 @@ static void parse_alias_section(struct config *config, struct ini_section *secti
 static int config_parse_string(struct config *config, char *content)
 {
 	size_t i;
-	struct ini *ini;
+	struct ini ini = {0};
+	int failed_parse = 0;
 
-	if (!(ini = ini_parse_string(content, NULL)))
+	if (ini_parse_string(&ini, content, NULL)){
 		return -1;
+	}
 
 	/* First pass: create all layers based on section headers.  */
-	for (i = 0; i < ini->nr_sections; i++) {
-		struct ini_section *section = &ini->sections[i];
+	for (i = 0; i < ini.nr_sections; i++) {
+		struct ini_section *section = &ini.sections[i];
 
 		if (!strcmp(section->name, "ids")) {
 			parse_id_section(config, section);
@@ -858,10 +860,10 @@ static int config_parse_string(struct config *config, char *content)
 	}
 
 	/* Populate each layer. */
-	for (i = 0; i < ini->nr_sections; i++) {
+	for (i = 0; i < ini.nr_sections; i++) {
 		size_t j;
 		char *layername;
-		struct ini_section *section = &ini->sections[i];
+		struct ini_section *section = &ini.sections[i];
 
 		if (!strcmp(section->name, "ids") ||
 		    !strcmp(section->name, "aliases") ||
@@ -876,17 +878,20 @@ static int config_parse_string(struct config *config, char *content)
 
 			if (!ent->val) {
 				warn("invalid binding on line %zd", ent->lnum);
+				failed_parse = -1;
 				continue;
 			}
 
 			snprintf(entry, sizeof entry, "%s.%s = %s", layername, ent->key, ent->val);
 
-			if (config_add_entry(config, entry) < 0)
+			if (config_add_entry(config, entry) < 0){
 				keyd_log("\tr{ERROR:} line m{%zd}: %s\n", ent->lnum, errstr);
+				failed_parse = -1;
+			}
 		}
 	}
 
-	return 0;
+	return failed_parse;
 }
 
 static void config_init(struct config *config)

@@ -1,4 +1,19 @@
+#define _GNU_SOURCE
+
+#include <stdarg.h>
+#include <dirent.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <string.h>
+
 #include "keyd.h"
+#include "keyboard.h"
+#include "projconf.h"
+#include "log.h"
+#include "vkbd.h"
+#include "strutil.h"
+#include "unicode.h"
 
 struct config_ent {
 	struct config config;
@@ -16,7 +31,7 @@ static int listeners[32];
 static size_t nr_listeners = 0;
 static struct keyboard *active_kbd = NULL;
 
-static void free_configs()
+static void free_configs(void)
 {
 	struct config_ent *ent = configs;
 	while (ent) {
@@ -29,13 +44,13 @@ static void free_configs()
 	configs = NULL;
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	free_configs();
 	free_vkbd(vkbd);
 }
 
-static void clear_vkbd()
+static void clear_vkbd(void)
 {
 	size_t i;
 
@@ -136,7 +151,7 @@ static void on_layer_change(const struct keyboard *kbd, const struct layer *laye
 	}
 }
 
-static void load_configs()
+static void load_configs(void)
 {
 	DIR *dh = opendir(CONFIG_DIR);
 	struct dirent *dirent;
@@ -151,8 +166,12 @@ static void load_configs()
 	while ((dirent = readdir(dh))) {
 		char path[1024];
 		int len;
+		struct stat inode;
 
-		if (dirent->d_type == DT_DIR)
+		if (stat(dirent->d_name, &inode) == -1)
+			continue;
+
+		if (!S_ISREG(inode.st_mode))
 			continue;
 
 		len = snprintf(path, sizeof path, "%s/%s", CONFIG_DIR, dirent->d_name);
@@ -237,7 +256,7 @@ static void manage_device(struct device *dev)
 	}
 }
 
-static void reload()
+static void reload(void)
 {
 	size_t i;
 
@@ -277,7 +296,7 @@ static void send_fail(int con, const char *fmt, ...)
 	va_end(args);
 }
 
-static int input(char *buf, size_t sz, uint32_t timeout)
+static int input(char *buf, uint32_t timeout)
 {
 	size_t i;
 	uint32_t codepoint;
@@ -378,7 +397,7 @@ static void handle_client(int con)
 
 		break;
 	case IPC_INPUT:
-		if (input(msg.data, msg.sz, msg.timeout))
+		if (input(msg.data, msg.timeout))
 			send_fail(con, "%s", errstr);
 		else
 			send_success(con);
@@ -444,7 +463,6 @@ static int event_handler(struct event *ev)
 			struct keyboard *kbd = ev->dev->data;
 			active_kbd = ev->dev->data;
 			switch (ev->devev->type) {
-			size_t i;
 			case DEV_KEY:
 				dbg("input %s %s", KEY_NAME(ev->devev->code), ev->devev->pressed ? "down" : "up");
 
@@ -541,7 +559,8 @@ static int event_handler(struct event *ev)
 
 int run_daemon(int argc, char *argv[])
 {
-	ipcfd = ipc_create_server(SOCKET_PATH);
+	UNUSED(argc), UNUSED(argv);
+	ipcfd = ipc_create_server();
 	if (ipcfd < 0)
 		die("failed to create %s (another instance already running?)", SOCKET_PATH);
 

@@ -9,7 +9,7 @@ conf_data.set('CONFIG_DIR', '"/@0@/keyd"'.format(get_option('sysconfdir')))
 conf_data.set('DATA_DIR', '"/@0@/@1@/keyd"'.format(get_option('prefix'), get_option('datadir')))
 conf_data.set('VERSION', '"@0@"'.format(meson.project_version()))
 conf_data.set('_FORTIFY_SOURCE', 2)
-conf_data.set('_DEFAULT_SOURCE', true)
+#conf_data.set('_DEFAULT_SOURCE', true)
 #conf_data.set('NDEBUG', true)
 
 configure_file(

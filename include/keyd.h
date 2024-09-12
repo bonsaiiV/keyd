@@ -5,32 +5,6 @@
  */
 #ifndef KEYD_H_
 #define KEYD_H_
-#include "projconf.h"
-
-#include <assert.h>
-#include <ctype.h>
-#include <dirent.h>
-#include <fcntl.h>
-#include <grp.h>
-#include <limits.h>
-#include <poll.h>
-#include <signal.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <termios.h>
-#include <getopt.h>
-#include <errno.h>
-#include <time.h>
-#include <unistd.h>
 
 #ifdef __FreeBSD__
 	#include <dev/evdev/input.h>
@@ -38,19 +12,13 @@
 	#include <linux/input.h>
 #endif
 
-#include "config.h"
-#include "macro.h"
 #include "device.h"
-#include "log.h"
-#include "keyboard.h"
-#include "keys.h"
-#include "vkbd.h"
-#include "strutil.h"
 
 #define MAX_IPC_MESSAGE_SIZE 4096
 
 #define ARRAY_SIZE(x) (int)(sizeof(x)/sizeof(x[0]))
 #define VKBD_NAME "keyd virtual keyboard"
+#define UNUSED(x) (void)x
 
 enum event_type {
 	EV_DEV_ADD,
@@ -95,8 +63,8 @@ int evloop(int (*event_handler) (struct event *ev));
 void xwrite(int fd, const void *buf, size_t sz);
 void xread(int fd, void *buf, size_t sz);
 
-int ipc_create_server();
-int ipc_connect();
+int ipc_create_server(void);
+int ipc_connect(void);
 
 extern struct device device_table[MAX_DEVICES];
 extern size_t device_table_sz;

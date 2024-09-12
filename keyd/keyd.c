@@ -3,8 +3,21 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
+#define _GNU_SOURCE
+#include <assert.h>
+#include <getopt.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <string.h>
+
 
 #include "keyd.h"
+#include "projconf.h"
+#include "config.h"
+#include "log.h"
+#include "keys.h"
 
 static int ipc_exec(int type, const char *data, size_t sz, uint32_t timeout)
 {
@@ -39,6 +52,7 @@ static int ipc_exec(int type, const char *data, size_t sz, uint32_t timeout)
 
 static int version(int argc, char *argv[])
 {
+	UNUSED(argc), UNUSED(argv);
 	printf("keyd " VERSION "\n");
 
 	return 0;
@@ -46,6 +60,7 @@ static int version(int argc, char *argv[])
 
 static int help(int argc, char *argv[])
 {
+	UNUSED(argc), UNUSED(argv);
 	printf("usage: keyd [-v] [-h] [command] [<args>]\n\n"
 	       "Commands:\n"
 	       "    monitor [-t]                   Print key events in real time.\n"
@@ -62,6 +77,7 @@ static int help(int argc, char *argv[])
 
 static int list_keys(int argc, char *argv[])
 {
+	UNUSED(argc), UNUSED(argv);
 	size_t i;
 
 	for (i = 0; i < 256; i++) {
@@ -236,6 +252,7 @@ static int input(int argc, char *argv[])
 
 static int layer_listen(int argc, char *argv[])
 {
+	UNUSED(argc), UNUSED(argv);
 	struct ipc_message msg = {0};
 
 	int con = ipc_connect();
@@ -259,8 +276,9 @@ static int layer_listen(int argc, char *argv[])
 	}
 }
 
-static int reload()
+static int reload(int argc, char **argv)
 {
+	UNUSED(argc), UNUSED(argv);
 	ipc_exec(IPC_RELOAD, NULL, 0, 0);
 
 	return 0;

@@ -1,4 +1,14 @@
+#define _DEFAULT_SOURCE
+
+#include <string.h>
+#include <unistd.h>
+
 #include "keyd.h"
+#include "macro.h"
+#include "keys.h"
+#include "unicode.h"
+#include "strutil.h"
+#include "log.h"
 
 /*
  * Parses expressions of the form: C-t hello enter.
@@ -22,7 +32,6 @@ int macro_parse(char *s, struct macro *macro)
 	macro->sz = 0;
 	for (tok = strtok(s, " "); tok; tok = strtok(NULL, " ")) {
 		uint8_t code, mods;
-		size_t len = strlen(tok);
 
 		if (!parse_key_sequence(tok, &code, &mods)) {
 			ADD_ENTRY(MACRO_KEYSEQUENCE, (mods << 8) | code);
@@ -31,7 +40,6 @@ int macro_parse(char *s, struct macro *macro)
 			char *key;
 
 			for (key = strtok_r(tok, "+", &saveptr); key; key = strtok_r(NULL, "+", &saveptr)) {
-				size_t len = strlen(key);
 
 				if (is_timeval(key))
 					ADD_ENTRY(MACRO_TIMEOUT, atoi(key));

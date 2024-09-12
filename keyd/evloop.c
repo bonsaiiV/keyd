@@ -1,4 +1,14 @@
+#define _GNU_SOURCE
+
+#include <time.h>
+#include <assert.h>
+#include <poll.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "keyd.h"
+#include "keys.h"
+#include "log.h"
 
 #define MAX_AUX_FDS 32
 
@@ -29,7 +39,7 @@ static void panic_check(uint8_t code, uint8_t pressed)
 	}
 }
 
-static long get_time_ms()
+static long get_time_ms(void)
 {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);

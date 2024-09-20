@@ -168,13 +168,13 @@ static void load_configs(void)
 		int len;
 		struct stat inode;
 
-		if (stat(dirent->d_name, &inode) == -1)
+		len = snprintf(path, sizeof path, "%s/%s", CONFIG_DIR, dirent->d_name);
+		if (stat(path, &inode) == -1)
 			continue;
 
 		if (!S_ISREG(inode.st_mode))
 			continue;
 
-		len = snprintf(path, sizeof path, "%s/%s", CONFIG_DIR, dirent->d_name);
 
 		if (len >= 5 && !strcmp(path + len - 5, ".conf")) {
 			struct config_ent *ent = calloc(1, sizeof(struct config_ent));

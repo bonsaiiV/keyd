@@ -41,6 +41,9 @@ keyd(1)
 *-h, --help*
 	Print help and exit.
 
+*-p, --enable-panic*
+	Enables the panic sequence noted in the next Section.
+
 # DESCRIPTION
 
 keyd is a system wide key remapping daemon which supports features like

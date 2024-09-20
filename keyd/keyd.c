@@ -19,6 +19,9 @@
 #include "log.h"
 #include "keys.h"
 
+int panic_check_enabled = 0;
+char* config_path = CONFIG_DIR;
+
 static int ipc_exec(int type, const char *data, size_t sz, uint32_t timeout)
 {
 	struct ipc_message msg;
@@ -62,15 +65,16 @@ static int help(int argc, char *argv[])
 {
 	UNUSED(argc), UNUSED(argv);
 	printf("usage: keyd [-v] [-h] [command] [<args>]\n\n"
-	       "Commands:\n"
-	       "    monitor [-t]                   Print key events in real time.\n"
-	       "    list-keys                      Print a list of valid key names.\n"
-	       "    reload                         Trigger a reload .\n"
-	       "    listen                         Print layer state changes of the running keyd daemon to stdout.\n"
-	       "    bind <binding> [<binding>...]  Add the supplied bindings to all loaded configs.\n"
-	       "Options:\n"
-	       "    -v, --version      Print the current version and exit.\n"
-	       "    -h, --help         Print help and exit.\n");
+		"Commands:\n"
+		"    monitor [-t]                   Print key events in real time.\n"
+		"    list-keys                      Print a list of valid key names.\n"
+		"    reload                         Trigger a reload .\n"
+		"    listen                         Print layer state changes of the running keyd daemon to stdout.\n"
+		"    bind <binding> [<binding>...]  Add the supplied bindings to all loaded configs.\n"
+		"    check [-c CONFIG]              Checks wheather config can be parsed. Alternate config can be specified.\n"
+		"Options:\n"
+		"    -v, --version      Print the current version and exit.\n"
+		"    -h, --help         Print help and exit.\n");
 
 	return 0;
 }
@@ -144,18 +148,8 @@ static void read_input(int argc, char *argv[], char *buf, size_t *psz)
 
 static int check_config(int argc, char *argv[])
 {
+	UNUSED(argc), UNUSED(argv);
 	char err_message[128];
-	char opt;
-	char* config_path = CONFIG_DIR;
-	while ((opt = getopt(argc, argv, "c:")) != -1){
-		switch (opt){
-			case 'c':
-				config_path = optarg;
-				break;
-			default:
-				return 1;
-		}
-	}
 	struct config dummy;
 	if(access(config_path, F_OK)){
 		snprintf(err_message, sizeof err_message, "no config found at \"%s\"", config_path);
@@ -288,25 +282,23 @@ static int reload(int argc, char **argv)
 
 struct {
 	const char *name;
-	const char *flag;
-	const char *long_flag;
 
 	int (*fn)(int argc, char **argv);
 } commands[] = {
-	{"help", "-h", "--help", help},
-	{"version", "-v", "--version", version},
+	{"help", help},
+	{"version", version},
 
 	/* Keep -e and -m for backward compatibility. TODO: remove these at some point. */
-	{"monitor", "-m", "--monitor", monitor},
-	{"check", "", "", check_config},
-	{"bind", "-e", "--expression", add_bindings},
-	{"input", "", "", input},
-	{"do", "", "", cmd_do},
+	{"monitor", monitor},
+	{"check", check_config},
+	{"bind", add_bindings},
+	{"input", input},
+	{"do", cmd_do},
 
-	{"listen", "", "", layer_listen},
+	{"listen", layer_listen},
 
-	{"reload", "", "", reload},
-	{"list-keys", "", "", list_keys},
+	{"reload", reload},
+	{"list-keys", list_keys},
 };
 
 int main(int argc, char *argv[])
@@ -326,17 +318,53 @@ int main(int argc, char *argv[])
 	signal(SIGTERM, exit);
 	signal(SIGINT, exit);
 	signal(SIGPIPE, SIG_IGN);
+	static struct option longopts[] = {
+		{"help", 0, 0, 'h'},
+		{"version", 0, 0, 'v'},
+		{"config", 1, 0, 'c'},
+		{"monitor", 0, 0, 'm'},
+		{"expression", 0, 0, 'e'},
+		{"enable-panic", 0, 0, 'p'},
+		{0, 0, 0, 0},
+	};
 
+	int (*cmd)(int,char**)  = &run_daemon;
 	if (argc > 1) {
 		for (i = 0; i < ARRAY_SIZE(commands); i++)
-			if (!strcmp(commands[i].name, argv[1]) ||
-				!strcmp(commands[i].flag, argv[1]) ||
-				!strcmp(commands[i].long_flag, argv[1])) {
-				return commands[i].fn(argc - 1, argv + 1);
+			if (!strcmp(commands[i].name, argv[1])) {
+				cmd = commands[i].fn;
+				argc--;
+				argv++;
+				break;
 			}
-
-		return help(argc, argv);
+	}
+	char opt;
+	while ((opt = getopt_long(argc, argv, "c:hvpme", longopts, NULL)) != -1){
+		switch (opt){
+			case 'h':
+				help(argc, argv);
+				break;
+			case 'v':
+				version(argc, argv);
+				break;
+			case 'c':
+				config_path = optarg;
+				break;
+			case 'p':
+				panic_check_enabled = 1;
+				break;
+			case 'm':
+				fprintf(stderr, "Options -m and --monitor are deprecated. Instead use monitor as subcommand.");
+				cmd = &monitor;
+				break;
+			case 'e':
+				fprintf(stderr, "Options -e and --expression are deprecated. Instead use bind as subcommand.");
+				cmd = &add_bindings;
+				break;
+			default:
+				cmd = &help;
+		}
 	}
 
-	run_daemon(argc, argv);
+	cmd(argc, argv);
 }

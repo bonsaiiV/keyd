@@ -169,7 +169,7 @@ static int check_config(int argc, char *argv[])
 	}
 	struct stat inode;
 	stat(config_path, &inode);
-	if (inode.st_mode & S_IFREG)
+	if (S_ISREG(inode.st_mode))
 	{
 		if(config_parse(&dummy, config_path)){
 			fprintf(stderr, "failed to parse config at \"%s\": %s\n", config_path, errstr);
@@ -177,25 +177,27 @@ static int check_config(int argc, char *argv[])
 		}
 		printf("config at \"%s\" successfully parsed\n", config_path);
 		return 0;
-	} else if (inode.st_mode & S_IFDIR){
-		DIR *dh;
+	} else if (S_ISDIR(inode.st_mode)){
+		DIR *dir_handel;
 		struct dirent *dirent;
 
-		if (!(dh = opendir(CONFIG_DIR))) {
+		if (!(dir_handel = opendir(CONFIG_DIR))) {
 			snprintf(err_message, sizeof err_message, "failed to open directory \"%s\"", config_path);
 			perror(err_message);
 			return -1;
 		}
 
-
-		while ((dirent = readdir(dh))) {
+		while ((dirent = readdir(dir_handel))) {
 			char path[1024];
 			int len;
 
-			if (dirent->d_type == DT_DIR)
+			len = snprintf(path, sizeof path, "%s/%s", CONFIG_DIR, dirent->d_name);
+			if (stat(path, &inode) != -1)
 				continue;
 
-			len = snprintf(path, sizeof path, "%s/%s", CONFIG_DIR, dirent->d_name);
+			if (!S_ISREG(inode.st_mode))
+				continue;
+
 
 			if (len >= 5 && !strcmp(path + len - 5, ".conf")) {
 				keyd_log("CONFIG: parsing b{%s}\n", path);
@@ -209,7 +211,7 @@ static int check_config(int argc, char *argv[])
 			}
 		}
 
-		closedir(dh);
+		closedir(dir_handel);
 	}
 	return 0;
 

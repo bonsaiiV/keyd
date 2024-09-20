@@ -223,13 +223,16 @@ int device_scan(struct device devices[MAX_DEVICES])
 		perror("opendir /dev/input");
 		exit(-1);
 	}
-
 	while((ent = readdir(dh))) {
-		if (ent->d_type != DT_DIR && !strncmp(ent->d_name, "event", 5)) {
-			assert(n < MAX_DEVICES);
-			struct device_worker *w = &workers[n++];
+		if (n >= MAX_DEVICES) break;
+		struct device_worker *w = &workers[n];
+		snprintf(w->path, sizeof(w->path), "/dev/input/%s", ent->d_name);
 
-			snprintf(w->path, sizeof(w->path), "/dev/input/%s", ent->d_name);
+		struct stat inode;
+		if (stat(w->path, &inode) == -1)
+			continue;
+		if (!S_ISDIR(inode.st_mode) && !strncmp(ent->d_name, "event", 5)) {
+			n++;
 			pthread_create(&w->tid, NULL, device_scan_worker, w);
 		}
 	}

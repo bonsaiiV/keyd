@@ -108,7 +108,7 @@ int monitor(int argc, char *argv[])
 	}
 
 	/* If stdout is a process, terminate on pipe closures. */
-	if (st.st_mode & S_IFIFO)
+	if (S_ISFIFO(st.st_mode))
 		evloop_add_fd(1);
 
 	setvbuf(stdout, NULL, _IOLBF, 0);

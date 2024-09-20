@@ -68,5 +68,6 @@ int ipc_connect(void);
 
 extern struct device device_table[MAX_DEVICES];
 extern size_t device_table_sz;
+extern int panic_check_enabled;
 
 #endif

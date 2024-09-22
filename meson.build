@@ -22,6 +22,10 @@ configure_file(
 include_dir = include_directories('include', '.')
 subdir('keyd')
 
+#tests are in subfolder
+subdir('test')
+
+#docs
 scdoc = dependency('scdoc', version: '>=1.9.2', native: true, required: false)
 if scdoc.found()
 	scdoc_prog = find_program(scdoc.get_variable(pkgconfig: 'scdoc'), native: true)

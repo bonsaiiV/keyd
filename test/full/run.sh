@@ -25,8 +25,8 @@ trap cleanup INT
 cd "$(dirname "$0")"
 cp test.conf "$tmpdir"
 
-(cd ..;make CONFIG_DIR="$tmpdir") || exit -1
-../bin/keyd > test.log 2>&1 &
+(cd -;make CONFIG_DIR="$tmpdir") || exit -1
+../../build/keyd/keyd > test.log 2>&1 &
 
 pid=$!
 
@@ -37,5 +37,5 @@ if [ $# -ne 0 ]; then
 	cleanup
 fi
 
-./runner.py -ev *.t
+./runner.py -ev ../sequences/*.t
 cleanup

@@ -7,6 +7,29 @@
 
 #include "strutil.h"
 
+/*
+ * Tokenizes the string splitting it at delim
+ * The original string is modified
+ * Returns one Token each call or NULL if none remain
+ * Empty Strings are never returned
+ */
+char * nexttoken(char ** str, char delim){
+	if(*str == NULL) return NULL;
+	for (;**str == delim; (*str)++);
+	if (**str == '\0')
+		return NULL;
+	char *ret = *str;
+	for (;**str != delim; (*str)++){
+		if (**str == '\0'){
+			*str = NULL;
+			return ret;
+		}
+	}
+	**str = '\0';
+	(*str)++;
+	return ret;
+}
+
 int utf8_read_char(const char *_s, uint32_t *code)
 {
 	const unsigned char *s = (const unsigned char*)_s;

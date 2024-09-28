@@ -17,6 +17,7 @@ sources = [
   'util.c',
   'vkbd/@0@.c'.format(get_option('vkbd')),
 ]
+strutil_dep = declare_dependency(sources : 'strutil.c')
 executable('keyd',
   sources,
   include_directories : include_dir,

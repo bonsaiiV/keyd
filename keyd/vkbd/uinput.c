@@ -41,34 +41,34 @@ static int create_virtual_keyboard(const char *name)
 
 	int fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK | O_CLOEXEC);
 	if (fd < 0) {
-		perror("open uinput");
+		perror("unable to open /dev/uinput during virtual keyboard creation");
 		exit(-1);
 	}
 
 	if (ioctl(fd, UI_SET_EVBIT, EV_REP)) {
-		perror("ioctl set_evbit");
+		perror("unable to set EV_REP during virtual keyboard creation");
 		exit(-1);
 	}
 
 	if (ioctl(fd, UI_SET_EVBIT, EV_KEY)) {
-		perror("ioctl set_evbit");
+		perror("unable to set EV_KEY during virtual keyboard creation");
 		exit(-1);
 	}
 
 	if (ioctl(fd, UI_SET_EVBIT, EV_LED)) {
-		perror("ioctl set_evbit");
+		perror("unable to set EV_LED during virtual keyboard creation");
 		exit(-1);
 	}
 
 	if (ioctl(fd, UI_SET_EVBIT, EV_SYN)) {
-		perror("ioctl set_evbit");
+		perror("unable to set EV_SYN during virtual keyboard creation");
 		exit(-1);
 	}
 
 	for (code = 0; code < 256; code++) {
 		if (keycode_table[code].name) {
 			if (ioctl(fd, UI_SET_KEYBIT, code)) {
-				perror("ioctl set_keybit");
+				perror("failed to set_keybit during virtual keyboard creation");
 				exit(-1);
 			}
 		}
@@ -76,12 +76,12 @@ static int create_virtual_keyboard(const char *name)
 
 	for (i = LED_NUML; i <= LED_MISC; i++)
 		if (ioctl(fd, UI_SET_LEDBIT, i)) {
-			perror("ioctl set_ledbit");
+			perror("unable to set_ledbit during virtual keyboard creation");
 			exit(-1);
 		}
 
 	if (ioctl(fd, UI_SET_KEYBIT, KEY_ZOOM)) {
-		perror("ioctl set_keybit");
+		perror("unable to set KEY_ZOOM during virtual keyboard creation");
 		exit(-1);
 	}
 
@@ -105,7 +105,7 @@ static int create_virtual_keyboard(const char *name)
 	}
 
 	if (ioctl(fd, UI_DEV_CREATE)) {
-		perror("ioctl dev_create");
+		perror("ioctl dev_create during virtual keyboard creation");
 		exit(-1);
 	}
 

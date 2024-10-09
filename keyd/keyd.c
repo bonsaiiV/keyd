@@ -36,7 +36,7 @@ static int ipc_exec(int type, const char *data, size_t sz, uint32_t timeout)
 	int con = ipc_connect();
 
 	if (con < 0) {
-		perror("connect");
+		perror("unable to connect to keyd socket");
 		exit(-1);
 	}
 
@@ -254,7 +254,7 @@ static int layer_listen(int argc, char *argv[])
 	int con = ipc_connect();
 
 	if (con < 0) {
-		perror("connect");
+		perror("unable to connect to keyd socket");
 		exit(-1);
 	}
 

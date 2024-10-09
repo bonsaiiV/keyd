@@ -157,7 +157,7 @@ static void load_configs(void)
 	struct dirent *dirent;
 
 	if (!dh) {
-		perror("opendir");
+		perror("failed to open "CONFIG_DIR);
 		exit(-1);
 	}
 
@@ -543,7 +543,7 @@ static int event_handler(struct event *ev)
 		if (ev->fd == ipcfd) {
 			int con = accept(ipcfd, NULL, 0);
 			if (con < 0) {
-				perror("accept");
+				perror("failed to accept connection on ipc socket");
 				exit(-1);
 			}
 
@@ -566,11 +566,12 @@ int run_daemon(int argc, char *argv[])
 
 	vkbd = vkbd_init(VKBD_NAME);
 
+	// wtf does this do here? stdout is already buffered. Why is it relevant for stderr?
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	setvbuf(stderr, NULL, _IOLBF, 0);
 
 	if (nice(-20) == -1) {
-		perror("nice");
+		perror("unable to set niceness");
 		exit(-1);
 	}
 

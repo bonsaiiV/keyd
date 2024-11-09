@@ -1,6 +1,6 @@
 project('keyd', 'c',
   version : '2.5.0',
-  default_options : ['warning_level=3', 'c_std=c11'],
+  default_options : ['c_std=c11'],
 )
 
 conf_data = configuration_data()

@@ -7,25 +7,32 @@
 
 #include "strutil.h"
 
+int contains(const char* str, char c){
+    while(*str) {
+        if (*(str++) == c) return 1;
+    }
+    return 0;
+}
 /*
- * Tokenizes the string splitting it at delim
+ * Tokenizes the string splitting it at characters found in delims
  * The original string is modified
  * Returns one Token each call or NULL if none remain
- * Empty Strings are never returned
+ * Empty Strings are never returned instead they are skipped until the next token is found
  */
-char * nexttoken(char ** str, char delim){
+char * tokenize(char ** str, const char * delims, char ** end){
 	if(*str == NULL) return NULL;
-	for (;**str == delim; (*str)++);
+	for (;contains(delims,**str); (*str)++);
 	if (**str == '\0')
 		return NULL;
 	char *ret = *str;
-	for (;**str != delim; (*str)++){
+	for (;contains(delims,**str); (*str)++){
 		if (**str == '\0'){
 			*str = NULL;
 			return ret;
 		}
 	}
 	**str = '\0';
+	if (end) *end = *str;
 	(*str)++;
 	return ret;
 }

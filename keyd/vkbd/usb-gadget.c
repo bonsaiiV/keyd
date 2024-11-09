@@ -31,7 +31,7 @@ static int create_virtual_keyboard(void)
 
 	int fd = open("/dev/hidg0", O_WRONLY | O_NONBLOCK);
 	if (fd < 0) {
-		perror("open");
+		perror("unable to open virtual keyboard");
 		exit(-1);
 	}
 

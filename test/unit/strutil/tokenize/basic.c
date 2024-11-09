@@ -19,7 +19,7 @@ int run_test(char* tmp, char* expected_value[]){
 	char* tok;
 	int i = 0;
 	do {
-		tok = nexttoken(&str, ' ');
+		tok = tokenize(&str, " ", NULL);
 		if(!streq(tok, expected_value[i])){
 			free(mem);
 			return 1;

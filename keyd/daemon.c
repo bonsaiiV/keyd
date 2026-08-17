@@ -1,4 +1,6 @@
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include <stdarg.h>
 #include <dirent.h>
@@ -567,6 +569,9 @@ int run_daemon(int argc, char *argv[])
 	vkbd = vkbd_init(VKBD_NAME);
 
 	// wtf does this do here? stdout is already buffered. Why is it relevant for stderr?
+	// stdout might not point to terminal
+	// stderr is by default unbuffered
+	// use linebuffering for both
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	setvbuf(stderr, NULL, _IOLBF, 0);
 

@@ -1,6 +1,6 @@
 project('keyd', 'c',
   version : '2.5.0',
-  default_options : ['c_std=c11'],
+  default_options : ['c_std=c11', 'warning_level=0'],
 )
 
 conf_data = configuration_data()
@@ -8,8 +8,8 @@ conf_data.set('SOCKET_PATH', '"/@0@"'.format(get_option('socket_path')))
 conf_data.set('CONFIG_DIR', '"/@0@/keyd"'.format(get_option('sysconfdir')))
 conf_data.set('DATA_DIR', '"/@0@/@1@/keyd"'.format(get_option('prefix'), get_option('datadir')))
 conf_data.set('VERSION', '"@0@"'.format(meson.project_version()))
-conf_data.set('_FORTIFY_SOURCE', 2)
-conf_data.set('_DEFAULT_SOURCE', true)
+#conf_data.set('_FORTIFY_SOURCE', 2)
+#conf_data.set('_DEFAULT_SOURCE', true)
 #conf_data.set('NDEBUG', true)
 
 configure_file(

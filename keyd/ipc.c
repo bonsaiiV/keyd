@@ -72,7 +72,10 @@ int ipc_create_server(void)
 	}
 	addr.sun_family = AF_UNIX;
 	strncpy(addr.sun_path, SOCKET_PATH, sizeof(addr.sun_path)-1);
-	snprintf(lockpath, sizeof lockpath, "%s.lock", SOCKET_PATH);
+	if (snprintf(lockpath, sizeof lockpath, "%s.lock", SOCKET_PATH)) {
+		fprintf(stderr, "lockpath is too long");
+		exit(-1);
+	}
 	lfd = open(lockpath, O_CREAT | O_RDONLY, 0600);
 
 	if (lfd < 0) {

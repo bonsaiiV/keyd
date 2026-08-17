@@ -3,7 +3,9 @@
  *
  * © 2019 Raheman Vaiya (see also: LICENSE).
  */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include <pthread.h>
 #include <dirent.h>
